@@ -65,3 +65,16 @@ function _new(fn, ...args) {
 // 4.手写promise   见promsie.js
 
 // 5.debounce && throttle
+function debounce(fn,wait) {
+  let timer = null
+  return function(...args) {
+    let ctx = this;
+    if(timer){
+      clearTimeout(timer)
+      timer = null
+    }
+    timer = setTimeout(() => {
+      fn.apply(ctx,args)
+    }, wait);
+  }
+}
