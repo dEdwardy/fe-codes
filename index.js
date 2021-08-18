@@ -12,14 +12,14 @@ function create(obj) {
 // 首先获取类型的原型
 // 然后获得对象的原型
 // 然后一直循环判断对象的原型是否等于类型的原型，直到对象原型为 null，因为原型链最终为 null
-function myInstance(left,right) {
-  let proto = Object.getPrototypeOf(left)   //获取对象的原型
-  let prototype = right.prototype           //获取构造函数的prototype对象
+function myInstance(left, right) {
+  let proto = Object.getPrototypeOf(left) //获取对象的原型
+  let prototype = right.prototype //获取构造函数的prototype对象
 
-    //判断构造函数的prototype 是否在对象的原型链上
-  while(true) {
-    if(!proto)return false
-    if(proto === prototype) return true
+  //判断构造函数的prototype 是否在对象的原型链上
+  while (true) {
+    if (!proto) return false
+    if (proto === prototype) return true
     proto = Object.getPrototypeOf(proto)
   }
 }
@@ -32,13 +32,13 @@ function myInstance(left,right) {
 
 function _new(fn, ...args) {
   // 基于fn的原型创建一个新的对象
-  const emptyObj = Object.create(fn.prototype);
+  const emptyObj = Object.create(fn.prototype)
 
-// 添加属性到新创建的emptyObj上, 并获取fn函数执行的结果.
-  const newObj = fn.apply(emptyObj, args);
+  // 添加属性到新创建的emptyObj上, 并获取fn函数执行的结果.
+  const newObj = fn.apply(emptyObj, args)
 
   // 如果执行结果有返回值并且是一个对象, 返回执行的结果, 否则, 返回新创建的对象
-  return newObj instanceof Object ? newObj : emptyObj;
+  return newObj instanceof Object ? newObj : emptyObj
 }
 // function objectFactory() {
 //   let newObject = null
@@ -62,40 +62,67 @@ function _new(fn, ...args) {
 // 使用方法
 // objectFactory(构造函数, 初始化参数)
 
-// 4.手写promise   见promsie.js
+// 4.手写promise
+// 4.1 promise A+ 见promsie.js
+// 4.2 prmomise. all /race
+
+function promiseAll(promises) {
+  return new Promise(function (resolve, reject) {
+    if (!Array.isArray(promises)) {
+      throw new TypeError(`argument must be a array`)
+    }
+    let resolvedCounter = 0
+    let promiseNum = promises.length
+    let resolvedResult = []
+    for (let i = 0; i < promiseNum; i++) {
+      Promise.resolve(promises[i]).then(
+        (value) => {
+          resolvedCounter++
+          resolvedResult[i] = value
+          if (resolvedCounter == promiseNum) {
+            return resolve(resolvedResult)
+          }
+        },
+        (error) => {
+          return reject(error)
+        }
+      )
+    }
+  })
+}
 
 // 5.debounce && throttle
 
 function debounce(fn, wait = 500) {
-  let timer = null;
+  let timer = null
   return function () {
     let context = this,
-      args = arguments;
+      args = arguments
 
     // 如果此时存在定时器的话，则取消之前的定时器重新记时
     if (timer) {
-      clearTimeout(timer);
-      timer = null;
+      clearTimeout(timer)
+      timer = null
     }
 
     // 设置定时器，使事件间隔指定事件后执行
     timer = setTimeout(() => {
-      fn.apply(context, args);
-    }, wait);
-  };
+      fn.apply(context, args)
+    }, wait)
+  }
 }
 function throttle(fn, delay = 1000) {
-  let curTime = Date.now();
+  let curTime = Date.now()
 
   return function () {
     let context = this,
       args = arguments,
-      nowTime = Date.now();
+      nowTime = Date.now()
 
     // 如果两次时间间隔超过了指定时间，则执行函数。
     if (nowTime - curTime >= delay) {
-      curTime = Date.now();
-      return fn.apply(context, args);
+      curTime = Date.now()
+      return fn.apply(context, args)
     }
-  };
+  }
 }
